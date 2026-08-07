@@ -1,0 +1,60 @@
+<?php
+
+namespace AsllanMaciel\WpReadmeValidator;
+
+use RuntimeException;
+
+final class MetadataParser {
+	/**
+	 * @return array<string, string>
+	 */
+	public function plugin( string $path ): array {
+		return $this->headers( $this->read( $path ) );
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	public function readme( string $path ): array {
+		$content = $this->read( $path );
+		$intro   = preg_split( '/^==\s+/m', $content, 2 )[0] ?? $content;
+		$headers = $this->headers( $intro );
+
+		if ( preg_match( '/^===\s*(.+?)\s*===$/m', $intro, $matches ) ) {
+			$headers['plugin name'] = trim( $matches[1] );
+		}
+
+		return $headers;
+	}
+
+	private function read( string $path ): string {
+		if ( ! is_file( $path ) || ! is_readable( $path ) ) {
+			throw new RuntimeException( sprintf( 'Cannot read file: %s', $path ) );
+		}
+
+		$content = file_get_contents( $path );
+
+		if ( false === $content ) {
+			throw new RuntimeException( sprintf( 'Cannot read file: %s', $path ) );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	private function headers( string $content ): array {
+		$headers = array();
+
+		if ( preg_match_all( '/^[\s\/*#@]*([A-Za-z][A-Za-z ]+):\s*(.*?)\s*(?:\*\/)?$/m', $content, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $match ) {
+				$key             = strtolower( trim( $match[1] ) );
+				$headers[ $key ] = trim( $match[2] );
+			}
+		}
+
+		return $headers;
+	}
+}
+

@@ -1,0 +1,21 @@
+name: WordPress Plugin Readme Validator
+description: Validate WordPress plugin headers against readme.txt metadata.
+author: Asllan Maciel
+branding:
+  icon: check-circle
+  color: blue
+inputs:
+  plugin-file:
+    description: Path to the main plugin PHP file.
+    required: true
+  readme-file:
+    description: Path to readme.txt.
+    required: false
+    default: readme.txt
+runs:
+  using: composite
+  steps:
+    - name: Validate plugin metadata
+      shell: bash
+      run: php "${{ github.action_path }}/bin/wp-readme-validator" --plugin="${{ inputs.plugin-file }}" --readme="${{ inputs.readme-file }}"
+

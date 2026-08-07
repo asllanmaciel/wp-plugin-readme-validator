@@ -1,0 +1,45 @@
+#!/usr/bin/env php
+<?php
+
+use AsllanMaciel\WpReadmeValidator\MetadataParser;
+use AsllanMaciel\WpReadmeValidator\Validator;
+
+require dirname( __DIR__ ) . '/src/MetadataParser.php';
+require dirname( __DIR__ ) . '/src/ValidationReport.php';
+require dirname( __DIR__ ) . '/src/Validator.php';
+
+$options = getopt( '', array( 'plugin:', 'readme:', 'json', 'help' ) );
+
+if ( isset( $options['help'] ) ) {
+	echo "Usage: php bin/wp-readme-validator --plugin=plugin.php --readme=readme.txt [--json]\n";
+	exit( 0 );
+}
+
+$plugin_path = is_string( $options['plugin'] ?? null ) ? $options['plugin'] : '';
+$readme_path = is_string( $options['readme'] ?? null ) ? $options['readme'] : '';
+
+if ( '' === $plugin_path || '' === $readme_path ) {
+	fwrite( STDERR, "Both --plugin and --readme are required. Use --help for usage.\n" );
+	exit( 2 );
+}
+
+try {
+	$parser = new MetadataParser();
+	$report = ( new Validator() )->validate( $parser->plugin( $plugin_path ), $parser->readme( $readme_path ) );
+} catch ( Throwable $error ) {
+	fwrite( STDERR, $error->getMessage() . "\n" );
+	exit( 2 );
+}
+
+if ( isset( $options['json'] ) ) {
+	echo json_encode( $report->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";
+} elseif ( array() === $report->issues() ) {
+	echo "OK: plugin headers and readme.txt are consistent.\n";
+} else {
+	foreach ( $report->issues() as $issue ) {
+		printf( "[%s] %s: %s\n", strtoupper( $issue['level'] ), $issue['code'], $issue['message'] );
+	}
+}
+
+exit( $report->hasErrors() ? 1 : 0 );
+

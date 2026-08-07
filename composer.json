@@ -1,0 +1,32 @@
+{
+  "name": "asllanmaciel/wp-plugin-readme-validator",
+  "description": "Dependency-free CLI and GitHub Action for validating WordPress plugin metadata.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.12 || ^2.0",
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "AsllanMaciel\\WpReadmeValidator\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AsllanMaciel\\WpReadmeValidator\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "analyse": "phpstan analyse --memory-limit=256M",
+    "test": "phpunit",
+    "check": ["@analyse", "@test"]
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
+
