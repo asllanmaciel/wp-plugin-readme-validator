@@ -1,0 +1,34 @@
+name: Relatar um problema
+description: Informe um comportamento incorreto ou inesperado do validador.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Obrigado por ajudar a melhorar o projeto. Remova segredos e dados privados dos exemplos.
+  - type: textarea
+    id: description
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o resultado atual e o resultado esperado.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Como reproduzir?
+      description: Inclua um exemplo mínimo de cabeçalho e readme.txt.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versão do PHP e do validador
+      placeholder: PHP 8.3, validador v1
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Saída do comando
+      render: shell

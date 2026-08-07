@@ -83,7 +83,12 @@ A matriz de CI cobre PHP 8.1, 8.2, 8.3 e 8.4.
 
 O projeto valida somente regras determinísticas e úteis. Ele não tenta substituir a validação oficial do diretório WordPress.org nem interpretar o código do plugin.
 
+## Contribuindo
+
+Issues e pull requests são bem-vindos. Leia [CONTRIBUTING.md](CONTRIBUTING.md) e escolha uma tarefa marcada como [`good first issue`](https://github.com/asllanmaciel/wp-plugin-readme-validator/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22).
+
+Vulnerabilidades devem ser reportadas de forma privada conforme [SECURITY.md](SECURITY.md).
+
 ## Licença
 
 MIT.
-
