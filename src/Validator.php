@@ -16,7 +16,7 @@ final class Validator {
 			}
 		}
 
-		foreach ( array( 'plugin name', 'contributors', 'tags', 'requires at least', 'tested up to', 'requires php', 'stable tag', 'license' ) as $field ) {
+		foreach ( array( 'plugin name', 'contributors', 'tags', 'tested up to', 'stable tag', 'license' ) as $field ) {
 			if ( empty( $readme[ $field ] ) ) {
 				$issues[] = $this->issue( 'error', 'readme.missing_header', sprintf( 'readme.txt is missing "%s".', $field ) );
 			}
@@ -72,4 +72,3 @@ final class Validator {
 		return compact( 'level', 'code', 'message' );
 	}
 }
-
