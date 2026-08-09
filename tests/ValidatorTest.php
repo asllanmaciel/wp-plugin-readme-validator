@@ -32,6 +32,30 @@ final class ValidatorTest extends TestCase {
 		self::assertSame( array(), $report->issues() );
 	}
 
+	public function test_readme_requirement_headers_are_optional(): void {
+		$plugin = array(
+			'plugin name'       => 'Example',
+			'version'           => '1.2.3',
+			'requires at least' => '6.5',
+			'requires php'      => '8.1',
+			'license'           => 'GPL-2.0-or-later',
+			'text domain'       => 'example',
+		);
+		$readme = array(
+			'plugin name'  => 'Example',
+			'contributors' => 'example',
+			'tags'         => 'example, development',
+			'tested up to' => '7.0',
+			'stable tag'   => '1.2.3',
+			'license'      => 'GPL-2.0-or-later',
+		);
+
+		$report = ( new Validator() )->validate( $plugin, $readme );
+
+		self::assertFalse( $report->hasErrors() );
+		self::assertSame( array(), $report->issues() );
+	}
+
 	public function test_mismatches_are_reported(): void {
 		$report = ( new Validator() )->validate(
 			array(
@@ -59,4 +83,3 @@ final class ValidatorTest extends TestCase {
 		self::assertSame( 1, $report->toArray()['warnings'] );
 	}
 }
-
