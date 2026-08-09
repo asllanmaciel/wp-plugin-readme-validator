@@ -7,8 +7,8 @@ CLI e GitHub Action sem dependências de runtime para encontrar inconsistências
 Um plugin pode funcionar normalmente e ainda ser rejeitado ou publicado com metadados incorretos porque:
 
 - `Stable tag` não corresponde à versão do plugin;
-- requisitos de WordPress ou PHP divergem entre os arquivos;
-- cabeçalhos obrigatórios estão ausentes;
+- requisitos de WordPress ou PHP divergem quando aparecem nos dois arquivos;
+- cabeçalhos importantes estão ausentes;
 - o `readme.txt` usa mais tags do que o diretório considera;
 - versões têm formatos inesperados.
 
@@ -62,13 +62,15 @@ jobs:
 
 ## Validações atuais
 
-- Cabeçalhos obrigatórios do plugin.
-- Cabeçalhos obrigatórios do `readme.txt`.
+- Cabeçalhos importantes do plugin.
+- Cabeçalhos importantes do `readme.txt`.
 - `Version` versus `Stable tag`.
-- `Requires PHP` entre os dois arquivos.
-- `Requires at least` entre os dois arquivos.
+- `Requires PHP` entre os dois arquivos, quando também declarado no `readme.txt`.
+- `Requires at least` entre os dois arquivos, quando também declarado no `readme.txt`.
 - Limite recomendado de cinco tags.
 - Formato básico dos campos de versão.
+
+Desde o WordPress 5.8, o diretório lê `Requires PHP` e `Requires at least` do arquivo PHP principal do plugin. Por isso, o validador não exige mais que esses campos sejam duplicados no `readme.txt`; se estiverem presentes nos dois arquivos, eles ainda precisam ser consistentes.
 
 ## Desenvolvimento
 
