@@ -1,9 +1,7 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,4 +23,3 @@ jobs:
       - run: composer test
       - if: matrix.php == '8.3'
         run: composer analyse
-
