@@ -16,7 +16,7 @@ O validador transforma esses problemas em uma saída legível, JSON ou falha de 
 
 ## Uso pela linha de comando
 
-Não é necessário instalar dependências:
+Não é necessário instalar dependências de runtime:
 
 ```bash
 php bin/wp-readme-validator \
@@ -41,6 +41,8 @@ Exit codes:
 
 ## Uso como GitHub Action
 
+Enquanto a primeira release estável ainda não foi publicada, use `@main` para avaliação:
+
 ```yaml
 name: Validate plugin metadata
 
@@ -54,11 +56,13 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-      - uses: asllanmaciel/wp-plugin-readme-validator@v1
+      - uses: asllanmaciel/wp-plugin-readme-validator@main
         with:
           plugin-file: meu-plugin.php
           readme-file: readme.txt
 ```
+
+A primeira release estável está planejada como `v1.0.0`. Depois dela, a documentação passará a recomendar o alias major `@v1`. Veja [`docs/RELEASING.md`](docs/RELEASING.md).
 
 ## Validações atuais
 
@@ -79,7 +83,7 @@ composer install
 composer check
 ```
 
-A matriz de CI cobre PHP 8.1, 8.2, 8.3 e 8.4.
+A matriz de compatibilidade cobre PHP 8.1, 8.2, 8.3 e 8.4 quando o workflow manual é executado. O loop normal de desenvolvimento prioriza `composer check` local para controlar consumo de CI.
 
 ## Filosofia
 
@@ -90,6 +94,9 @@ O projeto valida somente regras determinísticas e úteis. Ele não tenta substi
 Issues e pull requests são bem-vindos. Leia [CONTRIBUTING.md](CONTRIBUTING.md) e escolha uma tarefa marcada como [`good first issue`](https://github.com/asllanmaciel/wp-plugin-readme-validator/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22).
 
 Vulnerabilidades devem ser reportadas de forma privada conforme [SECURITY.md](SECURITY.md).
+
+- [Changelog](CHANGELOG.md)
+- [Processo de release](docs/RELEASING.md)
 
 ## Licença
 
