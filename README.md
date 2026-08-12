@@ -85,6 +85,15 @@ composer check
 
 A matriz de compatibilidade cobre PHP 8.1, 8.2, 8.3 e 8.4 quando o workflow manual é executado. O loop normal de desenvolvimento prioriza `composer check` local para controlar consumo de CI.
 
+## Ecossistema WordPress relacionado
+
+O Validator complementa outros projetos WordPress mantidos pelo mesmo ecossistema:
+
+- **[WP24H Plugin Boilerplate](https://github.com/WP24Horas/wp24h-plugin-boilerplate)** — base modular para iniciar plugins profissionais com testes e análise estática.
+- **[WP24H MD Importer](https://github.com/asllanmaciel/wp24h-md-importer)** — plugin funcional que serve como caso real de metadados, distribuição e automação WordPress.
+
+Uma forma prática de usar os projetos juntos é iniciar a estrutura no Boilerplate, desenvolver o plugin e executar este Validator como um dos checks antes de empacotar a release.
+
 ## Filosofia
 
 O projeto valida somente regras determinísticas e úteis. Ele não tenta substituir a validação oficial do diretório WordPress.org nem interpretar o código do plugin.
