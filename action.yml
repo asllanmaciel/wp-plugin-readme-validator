@@ -17,5 +17,8 @@ runs:
   steps:
     - name: Validate plugin metadata
       shell: bash
-      run: php "${{ github.action_path }}/bin/wp-readme-validator" --plugin="${{ inputs.plugin-file }}" --readme="${{ inputs.readme-file }}"
-
+      env:
+        WP_README_VALIDATOR_ACTION_PATH: ${{ github.action_path }}
+        WP_README_VALIDATOR_PLUGIN_FILE: ${{ inputs.plugin-file }}
+        WP_README_VALIDATOR_README_FILE: ${{ inputs.readme-file }}
+      run: php "$WP_README_VALIDATOR_ACTION_PATH/bin/wp-readme-validator" --plugin="$WP_README_VALIDATOR_PLUGIN_FILE" --readme="$WP_README_VALIDATOR_README_FILE"
