@@ -46,6 +46,8 @@ final class MetadataParser {
 			$content = substr( $content, 3 );
 		}
 
+		$content = str_replace( array( "\r\n", "\r" ), "\n", $content );
+
 		return $content;
 	}
 
