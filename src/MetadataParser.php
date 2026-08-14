@@ -11,16 +11,16 @@ final class MetadataParser {
 	 * @return array<string, string>
 	 */
 	public function plugin( string $path ): array {
-		$content = $this->read( $path );
+		$content = substr( $this->read( $path ), 0, self::PLUGIN_HEADER_BYTES );
 
-		return $this->headers( substr( $content, 0, self::PLUGIN_HEADER_BYTES ) );
+		return $this->headers( $this->normalize( $this->removeBom( $content ) ) );
 	}
 
 	/**
 	 * @return array<string, string>
 	 */
 	public function readme( string $path ): array {
-		$content = $this->read( $path );
+		$content = $this->normalize( $this->removeBom( $this->read( $path ) ) );
 		$intro   = preg_split( '/^==\s+/m', $content, 2 )[0] ?? $content;
 		$headers = $this->headers( $intro );
 
@@ -42,11 +42,19 @@ final class MetadataParser {
 			throw new RuntimeException( sprintf( 'Cannot read file: %s', $path ) );
 		}
 
+		return $content;
+	}
+
+	private function removeBom( string $content ): string {
 		if ( str_starts_with( $content, "\xEF\xBB\xBF" ) ) {
-			$content = substr( $content, 3 );
+			return substr( $content, 3 );
 		}
 
 		return $content;
+	}
+
+	private function normalize( string $content ): string {
+		return str_replace( array( "\r\n", "\r" ), "\n", $content );
 	}
 
 	/**

@@ -45,6 +45,27 @@ final class MetadataParserTest extends TestCase {
 		self::assertArrayNotHasKey( 'requires php', $headers );
 	}
 
+	public function test_crlf_header_after_first_8192_raw_bytes_is_ignored(): void {
+		$prefix = "<?php\r\n" . str_repeat( "x\r\n", 2730 );
+		self::assertGreaterThan( 8192, strlen( $prefix ) );
+		self::assertLessThan( 8192, strlen( str_replace( "\r\n", "\n", $prefix ) ) );
+
+		$file = $this->temporaryFile( $prefix . "Version: 9.9.9\r\n" );
+		$headers = ( new MetadataParser() )->plugin( $file );
+
+		self::assertArrayNotHasKey( 'version', $headers );
+	}
+
+	public function test_utf8_bom_does_not_shift_an_incomplete_header_past_the_raw_byte_limit(): void {
+		$prefix = "\xEF\xBB\xBF<?php\n" . str_repeat( 'x', 8175 ) . "\n";
+		self::assertSame( 8185, strlen( $prefix ) );
+
+		$file = $this->temporaryFile( $prefix . "Version: 9.9.9\n" );
+		$headers = ( new MetadataParser() )->plugin( $file );
+
+		self::assertArrayNotHasKey( 'version', $headers );
+	}
+
 	public function test_late_comment_cannot_replace_missing_real_header(): void {
 		$file = $this->temporaryFile(
 			"<?php\n/**\n * Plugin Name: Example Plugin\n */\n" .
@@ -81,6 +102,27 @@ final class MetadataParserTest extends TestCase {
 		self::assertSame( '1.2.3', $parser->plugin( $plugin )['version'] ?? null );
 		self::assertSame( 'Example Plugin', $parser->readme( $readme )['plugin name'] ?? null );
 		self::assertSame( '1.2.3', $parser->readme( $readme )['stable tag'] ?? null );
+	}
+
+	public function test_lone_cr_plugin_headers_are_parsed(): void {
+		$file = $this->temporaryFile(
+			"<?php\r/**\r * Plugin Name: Example Plugin\r * Version: 1.2.3\r */\r"
+		);
+
+		$headers = ( new MetadataParser() )->plugin( $file );
+
+		self::assertSame( 'Example Plugin', $headers['plugin name'] ?? null );
+		self::assertSame( '1.2.3', $headers['version'] ?? null );
+	}
+
+	public function test_readme_headers_after_first_8192_bytes_are_not_limited(): void {
+		$readme = $this->temporaryFile(
+			"=== Example Plugin ===\n" . str_repeat( 'x', 8200 ) . "\nStable tag: 1.2.3\n"
+		);
+
+		$headers = ( new MetadataParser() )->readme( $readme );
+
+		self::assertSame( '1.2.3', $headers['stable tag'] ?? null );
 	}
 
 	public function test_utf8_bom_is_ignored_for_plugin_and_readme(): void {
