@@ -42,6 +42,10 @@ final class MetadataParser {
 			throw new RuntimeException( sprintf( 'Cannot read file: %s', $path ) );
 		}
 
+		if ( str_starts_with( $content, "\xEF\xBB\xBF" ) ) {
+			$content = substr( $content, 3 );
+		}
+
 		return $content;
 	}
 
