@@ -13,11 +13,21 @@ All notable changes to this project will be documented here.
 - WordPress/PHP requirement consistency checks;
 - recommended tag-count validation;
 - PHPUnit and PHPStan development checks;
+- parser-specific regression coverage for the WordPress 8 KB header boundary, CRLF, UTF-8 BOM and duplicate headers;
+- local static guard for safe composite Action input handling;
 - contribution, security and conduct guidance.
+
+### Fixed
+
+- plugin metadata parsing now ignores headers outside the first 8192 bytes, matching WordPress core's practical header scope;
+- UTF-8 BOM is ignored in memory so valid plugin/readme metadata is not missed;
+- duplicate metadata headers preserve the first occurrence instead of allowing later comments to silently replace it;
+- composite Action inputs are passed through environment variables instead of being interpolated directly into the shell command.
 
 ### Changed
 
-- repository CI is manual-only while local `composer check` remains the default validation loop.
+- repository CI is manual-only while local `composer check` remains the default validation loop;
+- the manual compatibility workflow also runs the Action safety guard on PHP 8.3.
 
 ## Release policy
 
