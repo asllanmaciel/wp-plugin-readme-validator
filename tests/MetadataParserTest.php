@@ -57,6 +57,16 @@ final class MetadataParserTest extends TestCase {
 		self::assertArrayNotHasKey( 'version', $headers );
 	}
 
+	public function test_first_duplicate_header_wins(): void {
+		$file = $this->temporaryFile(
+			"<?php\n/**\n * Plugin Name: Example Plugin\n * Version: 1.2.3\n */\n\n/**\n * Version: 9.9.9\n */\n"
+		);
+
+		$headers = ( new MetadataParser() )->plugin( $file );
+
+		self::assertSame( '1.2.3', $headers['version'] ?? null );
+	}
+
 	public function test_crlf_plugin_and_readme_match_lf_metadata(): void {
 		$plugin = $this->temporaryFile(
 			"<?php\r\n/**\r\n * Plugin Name: Example Plugin\r\n * Version: 1.2.3\r\n * Requires at least: 6.5\r\n * Requires PHP: 8.1\r\n * License: GPL-2.0-or-later\r\n * Text Domain: example-plugin\r\n */\r\n"
