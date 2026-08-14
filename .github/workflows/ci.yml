@@ -23,3 +23,5 @@ jobs:
       - run: composer test
       - if: matrix.php == '8.3'
         run: composer analyse
+      - if: matrix.php == '8.3'
+        run: composer action:safety
