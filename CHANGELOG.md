@@ -33,4 +33,4 @@ All notable changes to this project will be documented here.
 
 ## Release policy
 
-The first stable GitHub Action release is planned as `v1.0.0`. After it exists, the floating `v1` ref should point to the latest compatible v1 release.
+The first stable GitHub Action release is planned as `v1.0.0`. The existing historical `v1` ref must not be recommended to consumers until the validated stable release is published and `v1` is deliberately moved/recreated to the exact same release commit.
