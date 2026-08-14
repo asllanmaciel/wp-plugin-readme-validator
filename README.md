@@ -76,12 +76,27 @@ A primeira release estável está planejada como `v1.0.0`. Depois dela, a docume
 
 Desde o WordPress 5.8, o diretório lê `Requires PHP` e `Requires at least` do arquivo PHP principal do plugin. Por isso, o validador não exige mais que esses campos sejam duplicados no `readme.txt`; se estiverem presentes nos dois arquivos, eles ainda precisam ser consistentes.
 
+## Compatibilidade do parser
+
+A leitura do cabeçalho principal procura metadados somente nos primeiros **8192 bytes** do arquivo, acompanhando o limite prático usado pelo WordPress para plugin headers em vez de aceitar um `Version:` perdido em qualquer ponto do código.
+
+O parser também possui regressões para:
+
+- arquivos com LF e CRLF;
+- UTF-8 BOM;
+- headers duplicados, preservando a primeira ocorrência;
+- metadata fora da janela inicial de 8 KB.
+
+Essas garantias fazem parte do contrato local de testes antes da primeira release estável.
+
 ## Desenvolvimento
 
 ```bash
 composer install
 composer check
 ```
+
+`composer check` executa análise estática, PHPUnit, o guard de segurança da Action e um smoke do **CLI real**. O smoke valida um caso válido, um mismatch que deve falhar e a saída JSON através de `bin/wp-readme-validator`.
 
 A matriz de compatibilidade cobre PHP 8.1, 8.2, 8.3 e 8.4 quando o workflow manual é executado. O loop normal de desenvolvimento prioriza `composer check` local para controlar consumo de CI.
 
