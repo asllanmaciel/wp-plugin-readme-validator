@@ -15,6 +15,7 @@ All notable changes to this project will be documented here.
 - PHPUnit and PHPStan development checks;
 - parser-specific regression coverage for the WordPress 8 KB header boundary, CRLF, UTF-8 BOM and duplicate headers;
 - local static guard for safe composite Action input handling;
+- real CLI smoke coverage for valid metadata, validation errors and JSON output;
 - contribution, security and conduct guidance.
 
 ### Fixed
@@ -27,7 +28,8 @@ All notable changes to this project will be documented here.
 ### Changed
 
 - repository CI is manual-only while local `composer check` remains the default validation loop;
-- the manual compatibility workflow also runs the Action safety guard on PHP 8.3.
+- `composer check` now includes the Action safety guard and the end-to-end CLI smoke;
+- the manual compatibility workflow runs the CLI smoke across PHP 8.1–8.4 and the Action safety guard on PHP 8.3.
 
 ## Release policy
 
