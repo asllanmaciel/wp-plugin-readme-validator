@@ -22,17 +22,16 @@ not parse the CRLF fixture correctly: the existing CRLF regression test returned
 
 ## Correction
 
-`MetadataParser::read()` now normalizes `\r\n` and lone `\r` to `\n` in memory,
-after BOM removal and before parsing. The source file is only read; it is never
-rewritten. Normal LF input remains LF. This retains BOM handling, first-occurrence
-wins behavior, and the 8192-byte plugin-metadata limit.
+The initial correction normalized `\r\n` and lone `\r` to `\n` in memory before
+parsing. It was subsequently refined by the raw-byte-boundary review below. The
+source file is only read; it is never rewritten.
 
 ## Composer quality gate
 
 After the correction, `composer check` passed in the primary container:
 
 - PHPStan: no errors;
-- PHPUnit: 9 tests, 39 assertions;
+- PHPUnit: 13 tests, 55 assertions after the raw-byte-boundary revalidation;
 - composite Action safety guard: passed;
 - CLI smoke: passed.
 
@@ -76,10 +75,10 @@ mapping, not directly in `run`, so an input is not interpreted as shell source.
 
 | PHP version | composer install | PHPUnit | CLI smoke | Result |
 | --- | --- | --- | --- | --- |
-| 8.1.34 | PASS | PASS (9 tests, 39 assertions) | PASS | PASS |
-| 8.2.33 | PASS | PASS (9 tests, 39 assertions) | PASS | PASS |
-| 8.3.33 | PASS | PASS (9 tests, 39 assertions) | PASS | PASS |
-| 8.4.24 | PASS | PASS (9 tests, 39 assertions) | PASS | PASS |
+| 8.1.34 | PASS | PASS (13 tests, 55 assertions) | PASS | PASS |
+| 8.2.33 | PASS | PASS (13 tests, 55 assertions) | PASS | PASS |
+| 8.3.33 | PASS | PASS (13 tests, 55 assertions) | PASS | PASS |
+| 8.4.24 | PASS | PASS (13 tests, 55 assertions) | PASS | PASS |
 
 PHP 8.4.24 additionally passed `composer analyse` (no PHPStan errors) and
 `composer action:safety`. An initial parallel PHP 8.3 dependency download produced
@@ -100,6 +99,27 @@ not a repository failure.
   deliberately align the major ref and README guidance.
 
 No README, changelog, or release-status text was changed by this validation.
+
+## PR #9 raw-byte boundary review revalidation
+
+Review found that the initial CRLF correction normalized an entire plugin file
+before `plugin()` applied its 8192-byte limit. Because CRLF becomes shorter LF,
+that could pull a header physically beyond the WordPress raw-file window into the
+parser window.
+
+New regressions first reproduced the defect: a CRLF `Version` header physically
+after byte 8192 was incorrectly parsed, and early BOM removal could shift a
+truncated header across the raw boundary. The parser now reads the file unchanged,
+cuts the first 8192 raw bytes for plugin metadata (including any UTF-8 BOM), then
+removes a leading BOM and normalizes line endings inside that fixed window. This
+matches WordPress' first-8-KiB raw-file rule while retaining CRLF and lone-CR
+support. `readme.txt` still normalizes the complete file and has no plugin-header
+byte limit.
+
+The refreshed test suite explicitly covers valid LF, CRLF, lone-CR, and BOM plugin
+metadata; LF and CRLF raw-byte boundaries; no CRLF-induced boundary shift; duplicate
+headers; late header behavior; CRLF readmes; and readmes beyond 8192 bytes. PHP
+8.1–8.4 were revalidated after this correction.
 
 ## Remaining blockers
 
