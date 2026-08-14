@@ -5,11 +5,15 @@ namespace AsllanMaciel\WpReadmeValidator;
 use RuntimeException;
 
 final class MetadataParser {
+	private const PLUGIN_HEADER_BYTES = 8192;
+
 	/**
 	 * @return array<string, string>
 	 */
 	public function plugin( string $path ): array {
-		return $this->headers( $this->read( $path ) );
+		$content = $this->read( $path );
+
+		return $this->headers( substr( $content, 0, self::PLUGIN_HEADER_BYTES ) );
 	}
 
 	/**
@@ -57,4 +61,3 @@ final class MetadataParser {
 		return $headers;
 	}
 }
-
