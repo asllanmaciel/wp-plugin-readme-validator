@@ -2,6 +2,12 @@
 
 CLI e GitHub Action sem dependências de runtime para encontrar inconsistências entre o cabeçalho principal de um plugin WordPress e seu `readme.txt`.
 
+## Status de release
+
+**Stable release: [v1.0.0](https://github.com/asllanmaciel/wp-plugin-readme-validator/releases/tag/v1.0.0)**
+
+O alias major `@v1` foi realinhado ao mesmo commit da release estável e passou por consumer ref + Action contract proof. Para workflows normais, use `@v1`; para máxima reprodutibilidade, fixe `@v1.0.0` ou um commit SHA.
+
 ## Por que usar
 
 Um plugin pode funcionar normalmente e ainda ser rejeitado ou publicado com metadados incorretos porque:
@@ -41,7 +47,7 @@ Exit codes:
 
 ## Uso como GitHub Action
 
-Enquanto a primeira release estável ainda não foi publicada, use `@main` para avaliação:
+Use o alias major estável `@v1`:
 
 ```yaml
 name: Validate plugin metadata
@@ -56,13 +62,13 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-      - uses: asllanmaciel/wp-plugin-readme-validator@main
+      - uses: asllanmaciel/wp-plugin-readme-validator@v1
         with:
           plugin-file: meu-plugin.php
           readme-file: readme.txt
 ```
 
-A primeira release estável está planejada como `v1.0.0`. Depois dela, a documentação passará a recomendar o alias major `@v1`. Veja [`docs/RELEASING.md`](docs/RELEASING.md).
+Para máxima reprodutibilidade, você também pode fixar `@v1.0.0` ou um commit SHA. Veja [`docs/RELEASING.md`](docs/RELEASING.md).
 
 ## Validações atuais
 
@@ -78,16 +84,17 @@ Desde o WordPress 5.8, o diretório lê `Requires PHP` e `Requires at least` do 
 
 ## Compatibilidade do parser
 
-A leitura do cabeçalho principal procura metadados somente nos primeiros **8192 bytes** do arquivo, acompanhando o limite prático usado pelo WordPress para plugin headers em vez de aceitar um `Version:` perdido em qualquer ponto do código.
+A leitura do cabeçalho principal procura metadados somente nos primeiros **8192 bytes físicos** do arquivo, acompanhando o limite prático usado pelo WordPress para plugin headers. O corte acontece antes da remoção de BOM e da normalização de line endings, preservando a fronteira real do arquivo.
 
 O parser também possui regressões para:
 
-- arquivos com LF e CRLF;
+- arquivos com LF, CRLF e lone CR;
 - UTF-8 BOM;
 - headers duplicados, preservando a primeira ocorrência;
-- metadata fora da janela inicial de 8 KB.
+- metadata fora da janela inicial de 8 KB;
+- CRLF/BOM sem deslocar headers através da fronteira raw de 8192 bytes.
 
-Essas garantias fazem parte do contrato local de testes antes da primeira release estável.
+Essas garantias fazem parte do contrato validado da release `v1.0.0`.
 
 ## Desenvolvimento
 
@@ -98,7 +105,9 @@ composer check
 
 `composer check` executa análise estática, PHPUnit, o guard de segurança da Action e um smoke do **CLI real**. O smoke valida um caso válido, um mismatch que deve falhar e a saída JSON através de `bin/wp-readme-validator`.
 
-A matriz de compatibilidade cobre PHP 8.1, 8.2, 8.3 e 8.4 quando o workflow manual é executado. O loop normal de desenvolvimento prioriza `composer check` local para controlar consumo de CI.
+A compatibilidade da release `v1.0.0` foi validada localmente em PHP 8.1, 8.2, 8.3 e 8.4. O workflow do repositório permanece manual-only e o loop normal de desenvolvimento prioriza `composer check` local para controlar consumo de CI.
+
+O relatório completo está em [`RELEASE_VALIDATION_REPORT.md`](RELEASE_VALIDATION_REPORT.md).
 
 ## Ecossistema WordPress relacionado
 
