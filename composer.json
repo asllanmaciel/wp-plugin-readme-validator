@@ -24,7 +24,8 @@
     "analyse": "phpstan analyse --memory-limit=256M",
     "test": "phpunit",
     "action:safety": "php scripts/check-action-safety.php",
-    "check": ["@analyse", "@test", "@action:safety"]
+    "cli:smoke": "php scripts/smoke-cli.php",
+    "check": ["@analyse", "@test", "@action:safety", "@cli:smoke"]
   },
   "config": {
     "sort-packages": true
