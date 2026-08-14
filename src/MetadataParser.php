@@ -57,8 +57,11 @@ final class MetadataParser {
 
 		if ( preg_match_all( '/^[\s\/*#@]*([A-Za-z][A-Za-z ]+):\s*(.*?)\s*(?:\*\/)?$/m', $content, $matches, PREG_SET_ORDER ) ) {
 			foreach ( $matches as $match ) {
-				$key             = strtolower( trim( $match[1] ) );
-				$headers[ $key ] = trim( $match[2] );
+				$key = strtolower( trim( $match[1] ) );
+
+				if ( ! array_key_exists( $key, $headers ) ) {
+					$headers[ $key ] = trim( $match[2] );
+				}
 			}
 		}
 
