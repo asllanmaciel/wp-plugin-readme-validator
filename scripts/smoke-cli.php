@@ -10,6 +10,17 @@ if (! mkdir($temp, 0777, true) && ! is_dir($temp)) {
 }
 
 try {
+    [$helpExit, $helpOut, $helpErr] = runCliCommand($root, ['--help']);
+    assertSame(0, $helpExit, 'help CLI exit code');
+    assertContains('--plugin=<path>', $helpOut, 'help plugin option');
+    assertContains('--readme=<path>', $helpOut, 'help readme option');
+    assertContains('--json', $helpOut, 'help JSON option');
+    assertContains('--help', $helpOut, 'help option');
+    assertContains('0  Metadata is valid; warnings are allowed.', $helpOut, 'help exit code 0');
+    assertContains('1  Validation errors were found.', $helpOut, 'help exit code 1');
+    assertContains('2  Invalid arguments or unreadable input files.', $helpOut, 'help exit code 2');
+    assertSame('', trim($helpErr), 'help CLI stderr');
+
     $plugin = $temp . DIRECTORY_SEPARATOR . 'example-plugin.php';
     $readme = $temp . DIRECTORY_SEPARATOR . 'readme.txt';
 
@@ -53,16 +64,27 @@ try {
 /** @return array{0:int,1:string,2:string} */
 function runCli(string $root, string $plugin, string $readme, bool $json): array
 {
-    $command = [
-        PHP_BINARY,
-        $root . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'wp-readme-validator',
+    $arguments = [
         '--plugin=' . $plugin,
         '--readme=' . $readme,
     ];
 
     if ($json) {
-        $command[] = '--json';
+        $arguments[] = '--json';
     }
+
+    return runCliCommand($root, $arguments);
+}
+
+/** @param list<string> $arguments
+ *  @return array{0:int,1:string,2:string}
+ */
+function runCliCommand(string $root, array $arguments): array
+{
+    $command = array_merge(
+        [PHP_BINARY, $root . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'wp-readme-validator'],
+        $arguments
+    );
 
     $process = proc_open(
         array_map('strval', $command),
