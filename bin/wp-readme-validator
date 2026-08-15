@@ -11,7 +11,21 @@ require dirname( __DIR__ ) . '/src/Validator.php';
 $options = getopt( '', array( 'plugin:', 'readme:', 'json', 'help' ) );
 
 if ( isset( $options['help'] ) ) {
-	echo "Usage: php bin/wp-readme-validator --plugin=plugin.php --readme=readme.txt [--json]\n";
+	echo <<<'HELP'
+Usage: php bin/wp-readme-validator --plugin=<path> --readme=<path> [--json]
+
+Options:
+  --plugin=<path>  Required. Path to the main WordPress plugin PHP file.
+  --readme=<path>  Required. Path to the plugin readme.txt file.
+  --json           Output the validation report as JSON.
+  --help           Show this help message.
+
+Exit codes:
+  0  Metadata is valid; warnings are allowed.
+  1  Validation errors were found.
+  2  Invalid arguments or unreadable input files.
+
+HELP;
 	exit( 0 );
 }
 
@@ -42,4 +56,3 @@ if ( isset( $options['json'] ) ) {
 }
 
 exit( $report->hasErrors() ? 1 : 0 );
-
